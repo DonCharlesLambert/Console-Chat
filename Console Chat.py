@@ -25,23 +25,26 @@ def setup_server():
 
 
 def run_server(s):
+    client_list = []
+    print("Waiting for members...\n")
     s.listen()
     while True:
-        client_socket = s.accept()[0]
-        client_socket.send(bytes("You have successfully connected to DAWN CHAT", "utf-8"))  # TEST
+        client_list.append(s.accept()[0])
+        msg = input("Enter a message: ")
 
-        while True:
-            received = s.recv(1024)
-            print(received.decode("utf-8"))
-            msg = input("Enter a message: ")
-            client_socket.send(bytes(msg, "utf-8"))
+        for address in client_list:
+            address.send(bytes(msg, "utf-8"))
+            print("The other person is typing...\n")
+            received = address.recv(1024)
+            print("They said:", received.decode("utf-8"))
 
 
 def client_chat(s):
     msg = ""
     while msg != "bye":
+        print("The other person is typing...\n")
         received = s.recv(1024)
-        print(received.decode("utf-8"))
+        print("They said:", received.decode("utf-8"))
         msg = input("Enter a message: ")
         s.send(bytes(msg, "utf-8"))
 
